@@ -72,12 +72,12 @@ class Holidays
 		if (!$this->apiKey) {
 			$this->apiKey = env('GOOGLE_API_KEY');
 			if (!$this->apiKey) {
-				throw new \Exception('You must provide a Google API Key.');
+				throw new \Exception('You must set GOOGLE_API_KEY in your .env file or pass it to the withApiKey() method.');
 			}
 		}
 
 		if (!$this->countryCode) {
-			throw new \Exception('You must provide a country code.');
+			throw new \Exception('You must pass a country code to the inCountry() method.');
 		}
 
 		$result = [];
