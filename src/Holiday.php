@@ -6,7 +6,7 @@ class Holiday
 {
 
 	private $key;
-	private $locale;
+	private $locale = 'en';
 	private $country;
 	private $startDate;
 	private $endDate;
@@ -49,7 +49,7 @@ class Holiday
 
 	public function locale($locale)
 	{
-		$this->locale = $locale ?? 'en';
+		$this->locale = $locale;
 
 		return $this;
 	}
