@@ -15,8 +15,8 @@ class Holiday
 
 	public function __construct()
 	{
-		$this->startDate = date('Y-m-d') . 'T00:00:00-00:00';
-		$this->endDate = (date('Y') + 1) . '-01-01T00:00:00-00:00';
+		$this->startDate = date('Y') . '-01-01T00:00:00-00:00';
+		$this->endDate = date('Y') . '-12-31T00:00:00-00:00';
 	}
 
 	public function year($year)
