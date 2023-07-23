@@ -2,14 +2,15 @@
 
 namespace Sandbox\Google;
 
-class Holidays
+class Holiday
 {
 
-	private $apiKey;
-	private $countryCode;
+	private $key;
+	private $locale;
+	private $country;
 	private $startDate;
 	private $endDate;
-	private $minimal = false;
+	private $simple = false;
 	private $datesOnly = false;
 
 	public function __construct()
@@ -18,7 +19,7 @@ class Holidays
 		$this->endDate = (date('Y') + 1) . '-01-01T00:00:00-00:00';
 	}
 
-	public function inYear($year)
+	public function year($year)
 	{
 		$this->startDate = date('Y-m-d', strtotime($year . '-01-01')) . 'T00:00:00-00:00';
 		$this->endDate = date('Y-m-d', strtotime($year . '-12-31')) . 'T00:00:00-00:00';
@@ -40,27 +41,34 @@ class Holidays
 		return $this;
 	}
 
-	public function withApiKey($apiKey)
+	public function key($key)
 	{
-		$this->apiKey = $apiKey;
+		$this->key = $key;
 		return $this;
 	}
 
-	public function inCountry($countryCode)
+	public function locale($locale)
 	{
-		$this->countryCode = strtolower($countryCode);
-
-		return $this;
-	}
-
-	public function withMinimalOutput()
-	{
-		$this->minimal = true;
+		$this->locale = $locale ?? 'en';
 
 		return $this;
 	}
 
-	public function withDateOnlyOutput()
+	public function country($code)
+	{
+		$this->country = strtolower($code);
+
+		return $this;
+	}
+
+	public function simple()
+	{
+		$this->simple = true;
+
+		return $this;
+	}
+
+	public function dateOnly()
 	{
 		$this->datesOnly = true;
 
@@ -69,24 +77,24 @@ class Holidays
 
 	public function get()
 	{
-		if (!$this->apiKey) {
-			$this->apiKey = env('GOOGLE_API_KEY');
-			if (!$this->apiKey) {
-				throw new \Exception('You must set GOOGLE_API_KEY in your .env file or pass it to the withApiKey() method.');
+		if (!$this->key) {
+			$this->key = env('GOOGLE_API_KEY');
+			if (!$this->key) {
+				throw new \Exception('You must set GOOGLE_API_KEY in your .env file or pass it to the key() method.');
 			}
 		}
 
-		if (!$this->countryCode) {
-			throw new \Exception('You must pass a country code to the inCountry() method.');
+		if (!$this->country) {
+			throw new \Exception('You must pass a country code to the country() method.');
 		}
 
 		$result = [];
 
-		$apiUrl = "https://content.googleapis.com/calendar/v3/calendars/en.{$this->countryCode}%23holiday%40group.v.calendar.google.com/events" .
+		$apiUrl = "https://content.googleapis.com/calendar/v3/calendars/{$this->locale}.{$this->country}%23holiday%40group.v.calendar.google.com/events" .
 			'?singleEvents=false' .
 			"&timeMax={$this->endDate}" .
 			"&timeMin={$this->startDate}" .
-			"&key={$this->apiKey}";
+			"&key={$this->key}";
 
 		$response = json_decode(file_get_contents($apiUrl), true);
 
@@ -97,7 +105,7 @@ class Holidays
 				}
 
 				sort($result);
-			} elseif ($this->minimal === true) {
+			} elseif ($this->simple === true) {
 				foreach ($response['items'] as $holiday) {
 					$result[] = [
 						'name' => $holiday['summary'],
