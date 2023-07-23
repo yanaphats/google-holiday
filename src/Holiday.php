@@ -110,6 +110,7 @@ class Holiday
 					$result[] = [
 						'name' => $holiday['summary'],
 						'date' => $holiday['start']['date'],
+						'description' => $holiday['description'] ?? null,
 					];
 				}
 
